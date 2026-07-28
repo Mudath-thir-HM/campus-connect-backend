@@ -44,7 +44,7 @@ const app = new Elysia()
   .use(notificationRoutes);
 
 export const config = {
-  runtime: "nodejs20.x",
+  runtime: "edge",
 };
 
 export default async function handler(req: any, res: any) {
