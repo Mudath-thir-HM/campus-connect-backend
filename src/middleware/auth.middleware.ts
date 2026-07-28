@@ -8,10 +8,11 @@ export const authMiddleware = new Elysia()
   .use(jwt({ name: "authJwt", secret: process.env.JWT_SECRET! }))
   .derive({ as: "global" }, async ({ authJwt, cookie, headers }) => {
     const bearerToken = headers.authorization?.replace("Bearer ", "");
-    const token = cookie.auth?.value || bearerToken;
+    const token =
+      typeof cookie.auth?.value === "string" ? cookie.auth.value : bearerToken;
     console.log("[auth.middleware] extracted token:", token);
 
-    const payload = token && (await authJwt.verify(token));
+    const payload = token ? await authJwt.verify(token) : null;
 
     if (!payload) throw new AuthError("UNAUTHORIZED", "Please log in");
 
