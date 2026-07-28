@@ -37,6 +37,11 @@ export const createCommentSchema = t.Object({
   parent_comment_id: t.Optional(t.String()),
 });
 
+export const sendMessageSchema = t.Object({
+  recipient_id: t.String(),
+  body: t.String({ minLength: 1 }),
+});
+
 export const forumSchema = t.Object({
   id: t.String({ examples: ["9b1f2c3a-1111-4a2b-8c3d-abc123456789"] }),
   name: t.String({ examples: ["CSC 300 Level"] }),

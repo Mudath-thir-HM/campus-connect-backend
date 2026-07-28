@@ -3,6 +3,7 @@ import { otpRepository } from "../repositories/otp.repository";
 import { sendSms } from "../utils/sms";
 import { sendEmail } from "../utils/email";
 import { generateOtpCode, otpExpiryDate } from "../utils/otp";
+import { normalizeNigerianPhone } from "../utils/phone";
 
 export class AuthError extends Error {
   code: string;
@@ -20,16 +21,33 @@ export const authService = {
     phone: string;
     password: string;
   }) {
+    let normalizedPhone: string;
+    try {
+      normalizedPhone = normalizeNigerianPhone(input.phone);
+    } catch {
+      throw new AuthError(
+        "INVALID_PHONE",
+        "Please enter a valid Nigerian phone number",
+      );
+    } // normalize before anything else touches it
+
     const existing = await userRepository.findByEmailOrPhoneOrMatric(
       input.email,
-      input.phone,
+      normalizedPhone,
       input.matric_number,
     );
     if (existing)
-      throw new Error("Email, phone, or matric number already registered");
+      throw new AuthError(
+        "ALREADY_REGISTERED",
+        "Email, phone, or matric number already registered",
+      );
 
     const password_hash = await Bun.password.hash(input.password);
-    const user = await userRepository.create({ ...input, password_hash });
+    const user = await userRepository.create({
+      ...input,
+      phone: normalizedPhone,
+      password_hash,
+    });
 
     await this.issueAndSendOtp(user.id, user.email, user.phone, "signup");
 

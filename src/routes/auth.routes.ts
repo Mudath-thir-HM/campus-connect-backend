@@ -34,12 +34,12 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   })
   .post("/login", authController.login, {
     body: loginSchema,
+    cookie: t.Cookie({ auth: t.Optional(t.String()) }),
     response: {
       200: t.Object({
         id: t.String({ examples: ["4fd7d285-6999-40e1-a04b-c687cac577c2"] }),
         full_name: t.String({ examples: ["Mudathir Hassan"] }),
         email: t.String({ examples: ["eighthmudathir@gmail.com"] }),
-        token: t.String(),
       }),
       400: t.Object({
         error: t.String({

@@ -14,8 +14,7 @@ export const authController = {
       httpOnly: true,
       path: "/",
       maxAge: 7 * 86400,
-      sameSite: "lax",
     });
-    return { id: user.id, full_name: user.full_name, email: user.email, token };
+    return { id: user.id, full_name: user.full_name, email: user.email }; // token removed
   },
 };
