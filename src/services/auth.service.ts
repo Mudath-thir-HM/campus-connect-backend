@@ -102,18 +102,21 @@ export const authService = {
 
   async login(email: string, password: string) {
     const user = await userRepository.findByEmail(email);
-    if (!user)
-      throw new AuthError("INVALID_CREDENTIALS", "Invalid credentials");
+    if (!user) {
+      throw new AuthError("INVALID_EMAIL", "Email not found");
+    }
 
     const valid = await Bun.password.verify(password, user.password_hash);
-    if (!valid)
-      throw new AuthError("INVALID_CREDENTIALS", "Invalid credentials");
+    if (!valid) {
+      throw new AuthError("INVALID_PASSWORD", "Incorrect password");
+    }
 
-    if (!user.phone_verified)
+    if (!user.phone_verified) {
       throw new AuthError(
         "ACCOUNT_NOT_VERIFIED",
         "Please verify your account first",
       );
+    }
 
     return user;
   },

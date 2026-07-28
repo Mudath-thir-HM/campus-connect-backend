@@ -43,10 +43,18 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       }),
       400: t.Object({
         error: t.String({
-          examples: ["Invalid credentials", "Please verify your account first"],
+          examples: [
+            "Email not found",
+            "Incorrect password",
+            "Please verify your account first",
+          ],
         }),
         code: t.String({
-          examples: ["INVALID_CREDENTIALS", "ACCOUNT_NOT_VERIFIED"],
+          examples: [
+            "INVALID_EMAIL",
+            "INVALID_PASSWORD",
+            "ACCOUNT_NOT_VERIFIED",
+          ],
         }),
       }),
     },
