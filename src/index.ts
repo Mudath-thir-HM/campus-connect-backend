@@ -14,6 +14,8 @@ import { prioritySmsService } from "./services/priority-sms.service";
 import { settingsRoutes } from "./routes/settings.routes";
 import { notificationRoutes } from "./routes/notification.routes";
 
+const port = Number(process.env.PORT ?? 3000);
+
 const app = new Elysia()
   .onError(({ error, set }) => {
     set.status = 400;
@@ -40,7 +42,7 @@ const app = new Elysia()
   .use(newsRoutes)
   .use(settingsRoutes)
   .use(notificationRoutes)
-  .listen(3000);
+  .listen(port);
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 setInterval(() => {
