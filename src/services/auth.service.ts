@@ -50,13 +50,18 @@ export const authService = {
       password_hash,
     });
 
-    await this.issueAndSendOtp(user.id, user.email, user.phone, "signup");
-    await notificationService.notify(
-      user.id,
-      "welcome",
-      "Welcome!",
-      "Welcome to Campus Connect. Complete your profile setup to get started.",
-      null,
+    // Fire-and-forget: don't block registration on external delivery
+    Promise.allSettled([
+      this.issueAndSendOtp(user.id, user.email, user.phone, "signup"),
+      notificationService.notify(
+        user.id,
+        "welcome",
+        "Welcome!",
+        "Welcome to Campus Connect. Complete your profile setup to get started.",
+        null,
+      ),
+    ]).catch((err) =>
+      console.error("[register] background tasks failed:", err),
     );
 
     return { id: user.id, message: "Registered. OTP sent to email and phone." };
