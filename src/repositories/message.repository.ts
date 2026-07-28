@@ -82,4 +82,24 @@ export const messageRepository = {
     `;
     return Number(row.count);
   },
+
+  async findUnreadPastThreshold(minutes: number): Promise<any[]> {
+    const rows = await sql`
+    SELECT dm.id, dm.body, dm.created_at,
+      u.id AS recipient_id, u.phone AS recipient_phone, u.priority_sms_enabled,
+      s.full_name AS sender_name
+    FROM direct_messages dm
+    JOIN users u ON u.id = dm.recipient_id
+    JOIN users s ON s.id = dm.sender_id
+    WHERE dm.read_at IS NULL
+      AND dm.sms_sent_at IS NULL
+      AND dm.created_at < now() - (${minutes} || ' minutes')::interval
+      AND u.priority_sms_enabled = true
+  `;
+    return rows.map((r: any) => ({ ...r, created_at: toIso(r.created_at) }));
+  },
+
+  async markSmsSent(id: string): Promise<void> {
+    await sql`UPDATE direct_messages SET sms_sent_at = now() WHERE id = ${id}`;
+  },
 };

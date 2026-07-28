@@ -42,4 +42,44 @@ export const userRepository = {
   async markPhoneVerified(id: string): Promise<void> {
     await sql`UPDATE users SET phone_verified = true, updated_at = now() WHERE id = ${id}`;
   },
+
+  async updateProfile(
+    id: string,
+    data: { full_name?: string; email?: string; phone?: string },
+  ): Promise<User> {
+    const [user] = await sql`
+    UPDATE users SET
+      full_name = COALESCE(${data.full_name ?? null}, full_name),
+      email = COALESCE(${data.email ?? null}, email),
+      phone = COALESCE(${data.phone ?? null}, phone),
+      updated_at = now()
+    WHERE id = ${id}
+    RETURNING *
+  `;
+    return user as User;
+  },
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<void> {
+    await sql`UPDATE users SET password_hash = ${passwordHash}, updated_at = now() WHERE id = ${id}`;
+  },
+
+  async updateNotificationPrefs(
+    id: string,
+    prefs: {
+      email_notifications?: boolean;
+      push_notifications?: boolean;
+      forum_reply_notifications?: boolean;
+    },
+  ): Promise<User> {
+    const [user] = await sql`
+    UPDATE users SET
+      email_notifications = COALESCE(${prefs.email_notifications ?? null}, email_notifications),
+      priority_sms_enabled = COALESCE(${prefs.push_notifications ?? null}, priority_sms_enabled),
+      forum_reply_notifications = COALESCE(${prefs.forum_reply_notifications ?? null}, forum_reply_notifications),
+      updated_at = now()
+    WHERE id = ${id}
+    RETURNING *
+  `;
+    return user as User;
+  },
 };

@@ -54,6 +54,23 @@ export const createEventSchema = t.Object({
   event_date: t.String(), // ISO date string from the client
 });
 
+export const updateProfileSchema = t.Object({
+  full_name: t.Optional(t.String({ minLength: 2 })),
+  email: t.Optional(t.String({ format: "email" })),
+  phone: t.Optional(t.String({ minLength: 10 })),
+});
+
+export const changePasswordSchema = t.Object({
+  current_password: t.String(),
+  new_password: t.String({ minLength: 8 }),
+});
+
+export const updateNotificationPrefsSchema = t.Object({
+  email_notifications: t.Optional(t.Boolean()),
+  push_notifications: t.Optional(t.Boolean()),
+  forum_reply_notifications: t.Optional(t.Boolean()),
+});
+
 export const forumSchema = t.Object({
   id: t.String({ examples: ["9b1f2c3a-1111-4a2b-8c3d-abc123456789"] }),
   name: t.String({ examples: ["CSC 300 Level"] }),

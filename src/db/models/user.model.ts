@@ -14,6 +14,8 @@ export interface User {
   priority_sms_enabled: boolean;
   created_at: Date;
   updated_at: Date;
+  email_notifications: boolean;
+  forum_reply_notifications: boolean;
 }
 
 export type PublicUser = Omit<User, "password_hash">;

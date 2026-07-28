@@ -10,6 +10,8 @@ import { mediaRoutes } from "./routes/media.routes";
 import { messageRoutes } from "./routes/message.routes";
 import { eventRoutes } from "./routes/event.routes";
 import { newsRoutes } from "./routes/news.routes";
+import { prioritySmsService } from "./services/priority-sms.service";
+import { settingsRoutes } from "./routes/settings.routes";
 
 const app = new Elysia()
   .onError(({ error, set }) => {
@@ -35,6 +37,17 @@ const app = new Elysia()
   .use(messageRoutes)
   .use(eventRoutes)
   .use(newsRoutes)
+  .use(settingsRoutes)
   .listen(3000);
 
+const FIVE_MINUTES = 5 * 60 * 1000;
+setInterval(() => {
+  prioritySmsService
+    .runCheck()
+    .catch((err) => console.error("[priority-sms] check failed:", err));
+}, FIVE_MINUTES);
+
+prioritySmsService
+  .runCheck()
+  .catch((err) => console.error("[priority-sms] initial check failed:", err));
 console.log(`Server running on port ${app.server?.port}`);
