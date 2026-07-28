@@ -5,7 +5,10 @@ import { swagger } from "@elysiajs/swagger";
 import { AuthError } from "../src/services/auth.service";
 import { forumRoutes } from "../src/routes/forum.routes";
 import { postRoutes } from "../src/routes/post.routes";
-import { commentActionRoutes, commentRoutes } from "../src/routes/comment.routes";
+import {
+  commentActionRoutes,
+  commentRoutes,
+} from "../src/routes/comment.routes";
 import { mediaRoutes } from "../src/routes/media.routes";
 import { messageRoutes } from "../src/routes/message.routes";
 import { eventRoutes } from "../src/routes/event.routes";
