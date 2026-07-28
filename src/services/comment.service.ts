@@ -3,6 +3,7 @@ import { voteRepository } from "../repositories/vote.repository";
 import { postRepository } from "../repositories/post.repository";
 import { AuthError } from "./auth.service";
 import type { CommentWithAuthor } from "../db/models/comment.model";
+import { notificationService } from "./notification.service";
 
 interface CommentNode extends CommentWithAuthor {
   replies: CommentNode[];
@@ -28,7 +29,24 @@ export const commentService = {
       }
     }
 
-    return commentRepository.create(postId, userId, body, parentCommentId);
+    const comment = await commentRepository.create(
+      postId,
+      userId,
+      body,
+      parentCommentId,
+    );
+
+    if (post.user_id !== userId) {
+      notificationService.notify(
+        post.user_id,
+        "forum_reply",
+        "New reply",
+        `Someone replied to your post`,
+        postId,
+      );
+    }
+
+    return comment;
   },
 
   // builds the nested tree from a flat list — pulled once, nested in memory

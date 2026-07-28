@@ -12,6 +12,7 @@ import { eventRoutes } from "./routes/event.routes";
 import { newsRoutes } from "./routes/news.routes";
 import { prioritySmsService } from "./services/priority-sms.service";
 import { settingsRoutes } from "./routes/settings.routes";
+import { notificationRoutes } from "./routes/notification.routes";
 
 const app = new Elysia()
   .onError(({ error, set }) => {
@@ -38,6 +39,7 @@ const app = new Elysia()
   .use(eventRoutes)
   .use(newsRoutes)
   .use(settingsRoutes)
+  .use(notificationRoutes)
   .listen(3000);
 
 const FIVE_MINUTES = 5 * 60 * 1000;

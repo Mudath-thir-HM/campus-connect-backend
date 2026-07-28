@@ -4,6 +4,7 @@ import { sendSms } from "../utils/sms";
 import { sendEmail } from "../utils/email";
 import { generateOtpCode, otpExpiryDate } from "../utils/otp";
 import { normalizeNigerianPhone } from "../utils/phone";
+import { notificationService } from "./notification.service";
 
 export class AuthError extends Error {
   code: string;
@@ -50,6 +51,13 @@ export const authService = {
     });
 
     await this.issueAndSendOtp(user.id, user.email, user.phone, "signup");
+    await notificationService.notify(
+      user.id,
+      "welcome",
+      "Welcome!",
+      "Welcome to Campus Connect. Complete your profile setup to get started.",
+      null,
+    );
 
     return { id: user.id, message: "Registered. OTP sent to email and phone." };
   },
