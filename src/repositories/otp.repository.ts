@@ -1,16 +1,17 @@
 import { sql } from "../db/client";
 import type { OtpVerification } from "../db/models/user.model";
+import { toIso } from "../utils/serialize";
 
 export const otpRepository = {
   async create(
     userId: string,
     code: string,
     purpose: string,
-    expiresAt: Date,
+    expiresAt: Date | string,
   ): Promise<OtpVerification> {
     const [otp] = await sql`
       INSERT INTO otp_verifications (user_id, code, purpose, expires_at)
-      VALUES (${userId}, ${code}, ${purpose}, ${expiresAt})
+      VALUES (${userId}, ${code}, ${purpose}, ${toIso(expiresAt)})
       RETURNING *
     `;
     return otp as OtpVerification;
