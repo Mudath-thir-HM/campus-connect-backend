@@ -42,6 +42,18 @@ export const sendMessageSchema = t.Object({
   body: t.String({ minLength: 1 }),
 });
 
+export const createNewsSchema = t.Object({
+  title: t.String({ minLength: 2 }),
+  body: t.String({ minLength: 1 }),
+});
+
+export const createEventSchema = t.Object({
+  title: t.String({ minLength: 2 }),
+  description: t.Optional(t.String()),
+  venue: t.Optional(t.String()),
+  event_date: t.String(), // ISO date string from the client
+});
+
 export const forumSchema = t.Object({
   id: t.String({ examples: ["9b1f2c3a-1111-4a2b-8c3d-abc123456789"] }),
   name: t.String({ examples: ["CSC 300 Level"] }),

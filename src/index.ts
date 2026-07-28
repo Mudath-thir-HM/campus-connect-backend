@@ -8,6 +8,8 @@ import { postRoutes } from "./routes/post.routes";
 import { commentActionRoutes, commentRoutes } from "./routes/comment.routes";
 import { mediaRoutes } from "./routes/media.routes";
 import { messageRoutes } from "./routes/message.routes";
+import { eventRoutes } from "./routes/event.routes";
+import { newsRoutes } from "./routes/news.routes";
 
 const app = new Elysia()
   .onError(({ error, set }) => {
@@ -31,6 +33,8 @@ const app = new Elysia()
   .use(commentActionRoutes)
   .use(mediaRoutes)
   .use(messageRoutes)
+  .use(eventRoutes)
+  .use(newsRoutes)
   .listen(3000);
 
 console.log(`Server running on port ${app.server?.port}`);
