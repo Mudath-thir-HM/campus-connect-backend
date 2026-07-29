@@ -1,7 +1,12 @@
 import { Elysia, t } from "elysia";
 import { jwt } from "@elysiajs/jwt";
 import { authController } from "../controllers/auth.controller";
-import { registerSchema, verifyOtpSchema, loginSchema } from "../types/schema";
+import {
+  registerSchema,
+  verifyOtpSchema,
+  loginSchema,
+  resendOtpSchema,
+} from "../types/schema";
 
 export const authRoutes = new Elysia({ prefix: "/auth" })
   .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
@@ -16,8 +21,35 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       }),
       400: t.Object({
         error: t.String({
-          examples: ["Email, phone, or matric number already registered"],
+          examples: [
+            "Full name must be at least 8 characters",
+            "Please enter a valid email address",
+            "Please enter a valid Nigerian phone number",
+            "Password must be at least 8 characters and include uppercase, lowercase, and a number",
+            "Email, phone, or matric number already registered",
+          ],
         }),
+        code: t.String({
+          examples: [
+            "INVALID_FULL_NAME",
+            "INVALID_EMAIL",
+            "INVALID_PHONE",
+            "INVALID_PASSWORD",
+            "ALREADY_REGISTERED",
+          ],
+        }),
+      }),
+    },
+  })
+  .post("/resend-otp", authController.resendOtp, {
+    body: resendOtpSchema,
+    response: {
+      200: t.Object({
+        message: t.String({ examples: ["OTP resent successfully"] }),
+      }),
+      400: t.Object({
+        error: t.String({ examples: ["User not found"] }),
+        code: t.String({ examples: ["USER_NOT_FOUND"] }),
       }),
     },
   })
@@ -34,16 +66,18 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   })
   .post("/login", authController.login, {
     body: loginSchema,
-    cookie: t.Cookie({ auth: t.Optional(t.String()) }),
     response: {
       200: t.Object({
         id: t.String({ examples: ["4fd7d285-6999-40e1-a04b-c687cac577c2"] }),
         full_name: t.String({ examples: ["Mudathir Hassan"] }),
         email: t.String({ examples: ["eighthmudathir@gmail.com"] }),
+        token: t.String({ examples: ["eyJhbGciOiJIUzI1NiIs..."] }),
       }),
       400: t.Object({
         error: t.String({
           examples: [
+            "Please enter a valid email address",
+            "Password must be at least 8 characters",
             "Email not found",
             "Incorrect password",
             "Please verify your account first",
@@ -58,9 +92,13 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         }),
       }),
     },
+    detail: {
+      summary: "User login",
+      description:
+        "Authenticate user and receive JWT token. Send token in Authorization header for protected routes: `Authorization: Bearer <token>`",
+    },
   })
   .post("/logout", authController.logout, {
-    cookie: t.Cookie({ auth: t.Optional(t.String()) }),
     response: {
       200: t.Object({
         message: t.String({ examples: ["Logged out successfully"] }),

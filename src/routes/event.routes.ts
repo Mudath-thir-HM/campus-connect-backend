@@ -21,17 +21,27 @@ const feedEventSchema = t.Composite([
 ]);
 
 export const eventRoutes = new Elysia({ prefix: "/events" })
+  .use(authMiddleware)
   .get("/", eventController.list, {
     query: t.Object({
       limit: t.Optional(t.String()),
       offset: t.Optional(t.String()),
     }),
     response: { 200: t.Array(feedEventSchema) },
+    detail: {
+      summary: "List events",
+      description:
+        "Retrieve events list. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
-  .use(authMiddleware)
   .post("/", eventController.create, {
     body: createEventSchema,
     response: { 200: baseEventSchema },
+    detail: {
+      summary: "Create an event",
+      description:
+        "Create a new event. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .post("/:id/register", eventController.register, {
     params: t.Object({ id: t.String() }),

@@ -22,6 +22,20 @@ export const authService = {
     phone: string;
     password: string;
   }) {
+    if (!input.full_name || input.full_name.trim().length < 8) {
+      throw new AuthError(
+        "INVALID_FULL_NAME",
+        "Full name must be at least 8 characters",
+      );
+    }
+
+    if (!input.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+      throw new AuthError(
+        "INVALID_EMAIL",
+        "Please enter a valid email address",
+      );
+    }
+
     let normalizedPhone: string;
     try {
       normalizedPhone = normalizeNigerianPhone(input.phone);
@@ -31,6 +45,19 @@ export const authService = {
         "Please enter a valid Nigerian phone number",
       );
     } // normalize before anything else touches it
+
+    if (
+      !input.password ||
+      input.password.length < 8 ||
+      !/[A-Z]/.test(input.password) ||
+      !/[a-z]/.test(input.password) ||
+      !/[0-9]/.test(input.password)
+    ) {
+      throw new AuthError(
+        "INVALID_PASSWORD",
+        "Password must be at least 8 characters and include uppercase, lowercase, and a number",
+      );
+    }
 
     const existing = await userRepository.findByEmailOrPhoneOrMatric(
       input.email,
@@ -95,6 +122,17 @@ export const authService = {
     });
   },
 
+  async resendOtp(userId: string) {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AuthError("USER_NOT_FOUND", "User not found");
+    }
+
+    await this.issueAndSendOtp(user.id, user.email, user.phone, "signup");
+
+    return { message: "OTP resent successfully" };
+  },
+
   async verifyOtp(userId: string, code: string) {
     const otp = await otpRepository.findLatestValid(userId, "signup");
     if (!otp || otp.code !== code) throw new Error("Invalid or expired OTP");
@@ -106,6 +144,20 @@ export const authService = {
   },
 
   async login(email: string, password: string) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new AuthError(
+        "INVALID_EMAIL",
+        "Please enter a valid email address",
+      );
+    }
+
+    if (!password || password.length < 8) {
+      throw new AuthError(
+        "INVALID_PASSWORD",
+        "Password must be at least 8 characters",
+      );
+    }
+
     const user = await userRepository.findByEmail(email);
     if (!user) {
       throw new AuthError("INVALID_EMAIL", "Email not found");

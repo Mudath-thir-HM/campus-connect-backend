@@ -8,6 +8,10 @@ export const registerSchema = t.Object({
   password: t.String({ minLength: 8 }),
 });
 
+export const resendOtpSchema = t.Object({
+  user_id: t.String(),
+});
+
 export const verifyOtpSchema = t.Object({
   user_id: t.String(),
   code: t.String({ minLength: 6, maxLength: 6 }),

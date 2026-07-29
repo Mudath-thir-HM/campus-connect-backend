@@ -13,10 +13,16 @@ import { newsRoutes } from "./routes/news.routes";
 import { prioritySmsService } from "./services/priority-sms.service";
 import { settingsRoutes } from "./routes/settings.routes";
 import { notificationRoutes } from "./routes/notification.routes";
+import cors from "@elysiajs/cors";
 
 const port = Number(process.env.PORT ?? 3000);
 
 const app = new Elysia()
+  .use(
+    cors({
+      origin: true, // reflects whatever origin sent the request — effectively "allow all"
+    }),
+  )
   .onError(({ error, set }) => {
     set.status = 400;
     if (error instanceof AuthError) {

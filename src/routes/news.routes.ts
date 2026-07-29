@@ -16,22 +16,37 @@ const newsSchema = t.Object({
 });
 
 export const newsRoutes = new Elysia({ prefix: "/news" })
+  .use(authMiddleware)
   .get("/", newsController.list, {
     query: t.Object({
       limit: t.Optional(t.String()),
       offset: t.Optional(t.String()),
     }),
     response: { 200: t.Array(newsSchema) },
+    detail: {
+      summary: "List news posts",
+      description:
+        "Retrieve news posts list. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
-  .use(authMiddleware)
   .post("/", newsController.create, {
     body: createNewsSchema,
     response: { 200: newsSchema },
+    detail: {
+      summary: "Create a news post",
+      description:
+        "Create a new news post. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .delete("/:id", newsController.delete, {
     params: t.Object({ id: t.String() }),
     response: {
       200: t.Object({ message: t.String({ examples: ["News post deleted"] }) }),
       400: t.Object({ error: t.String(), code: t.String() }),
+    },
+    detail: {
+      summary: "Delete a news post",
+      description:
+        "Delete a news post. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   });

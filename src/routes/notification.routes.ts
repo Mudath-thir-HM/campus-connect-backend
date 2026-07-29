@@ -23,14 +23,29 @@ export const notificationRoutes = new Elysia({ prefix: "/notifications" })
       offset: t.Optional(t.String()),
     }),
     response: { 200: t.Array(notificationSchema) },
+    detail: {
+      summary: "List notifications",
+      description:
+        "Retrieve user notifications. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .get("/unread-count", notificationController.unreadCount, {
     response: { 200: t.Object({ count: t.Number({ examples: [4] }) }) },
+    detail: {
+      summary: "Get unread notification count",
+      description:
+        "Retrieve unread notification count. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .post("/:id/read", notificationController.markRead, {
     params: t.Object({ id: t.String() }),
     response: {
       200: t.Object({ message: t.String({ examples: ["Marked as read"] }) }),
+    },
+    detail: {
+      summary: "Mark notification as read",
+      description:
+        "Mark a notification as read. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   })
   .post("/read-all", notificationController.markAllRead, {
@@ -38,5 +53,10 @@ export const notificationRoutes = new Elysia({ prefix: "/notifications" })
       200: t.Object({
         message: t.String({ examples: ["All notifications marked as read"] }),
       }),
+    },
+    detail: {
+      summary: "Mark all notifications as read",
+      description:
+        "Mark all notifications as read. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   });

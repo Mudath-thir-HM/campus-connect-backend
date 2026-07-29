@@ -27,17 +27,27 @@ const commentNodeSchema: any = t.Recursive(
 );
 
 export const commentRoutes = new Elysia({ prefix: "/posts/:id/comments" })
+  .use(authMiddleware)
   .get("/", commentController.tree, {
     params: t.Object({ id: t.String() }),
     response: { 200: t.Array(commentNodeSchema) },
+    detail: {
+      summary: "Get comment tree",
+      description:
+        "Retrieve comment tree for a post. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
-  .use(authMiddleware)
   .post("/", commentController.create, {
     params: t.Object({ id: t.String() }),
     body: createCommentSchema,
     response: {
       200: baseCommentSchema,
       400: t.Object({ error: t.String(), code: t.String() }),
+    },
+    detail: {
+      summary: "Create a comment",
+      description:
+        "Create a comment on a post. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   });
 
@@ -50,10 +60,20 @@ export const commentActionRoutes = new Elysia({ prefix: "/comments" })
       200: t.Object({ message: t.String({ examples: ["Vote recorded"] }) }),
       400: t.Object({ error: t.String(), code: t.String() }),
     },
+    detail: {
+      summary: "Vote on a comment",
+      description:
+        "Vote on a comment. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .delete("/:id", commentController.delete, {
     params: t.Object({ id: t.String() }),
     response: {
       200: t.Object({ message: t.String({ examples: ["Comment deleted"] }) }),
+    },
+    detail: {
+      summary: "Delete a comment",
+      description:
+        "Delete a comment. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   });

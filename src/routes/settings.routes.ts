@@ -20,6 +20,11 @@ export const settingsRoutes = new Elysia({ prefix: "/users/me" })
       }),
       400: t.Object({ error: t.String(), code: t.String() }),
     },
+    detail: {
+      summary: "Update user profile",
+      description:
+        "Update user profile information. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .post("/password", settingsController.changePassword, {
     body: changePasswordSchema,
@@ -30,6 +35,11 @@ export const settingsRoutes = new Elysia({ prefix: "/users/me" })
         code: t.String({ examples: ["INVALID_CURRENT_PASSWORD"] }),
       }),
     },
+    detail: {
+      summary: "Change password",
+      description:
+        "Change user password. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .patch("/notifications", settingsController.updateNotifications, {
     body: updateNotificationPrefsSchema,
@@ -39,5 +49,10 @@ export const settingsRoutes = new Elysia({ prefix: "/users/me" })
         push_notifications: t.Boolean({ examples: [true] }),
         forum_reply_notifications: t.Boolean({ examples: [false] }),
       }),
+    },
+    detail: {
+      summary: "Update notification preferences",
+      description:
+        "Update notification preferences. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   });

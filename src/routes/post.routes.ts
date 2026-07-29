@@ -9,6 +9,7 @@ import {
 } from "../types/schema";
 
 export const postRoutes = new Elysia({ prefix: "/posts" })
+  .use(authMiddleware)
   .get("/", postController.feed as any, {
     query: t.Object({
       forum_id: t.Optional(t.String()),
@@ -16,8 +17,12 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
       offset: t.Optional(t.String()),
     }),
     response: { 200: t.Array(feedPostSchema) },
+    detail: {
+      summary: "Get posts feed",
+      description:
+        "Retrieve posts feed. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
-  .use(authMiddleware)
   .post("/", postController.create as any, {
     body: createPostSchema,
     response: {
@@ -26,6 +31,11 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
         error: t.String({ examples: ["Join the forum before posting in it"] }),
         code: t.String({ examples: ["NOT_A_MEMBER"] }),
       }),
+    },
+    detail: {
+      summary: "Create a new post",
+      description:
+        "Create a new post. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   })
   .post("/:id/vote", postController.vote, {
@@ -38,10 +48,20 @@ export const postRoutes = new Elysia({ prefix: "/posts" })
         code: t.String({ examples: ["POST_NOT_FOUND"] }),
       }),
     },
+    detail: {
+      summary: "Vote on a post",
+      description:
+        "Vote on a post. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .delete("/:id", postController.delete, {
     params: t.Object({ id: t.String() }),
     response: {
       200: t.Object({ message: t.String({ examples: ["Post deleted"] }) }),
+    },
+    detail: {
+      summary: "Delete a post",
+      description:
+        "Delete a post. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   });

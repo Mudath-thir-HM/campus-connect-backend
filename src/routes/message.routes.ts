@@ -33,12 +33,27 @@ export const messageRoutes = new Elysia({ prefix: "/messages" })
       200: messageSchema,
       400: t.Object({ error: t.String(), code: t.String() }),
     },
+    detail: {
+      summary: "Send a message",
+      description:
+        "Send a message to another user. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .get("/conversations", messageController.conversations, {
     response: { 200: t.Array(conversationSchema) },
+    detail: {
+      summary: "Get conversations",
+      description:
+        "Retrieve user conversations. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .get("/unread-count", messageController.unreadCount, {
     response: { 200: t.Object({ count: t.Number({ examples: [3] }) }) },
+    detail: {
+      summary: "Get unread message count",
+      description:
+        "Retrieve unread message count. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   })
   .get("/:id", messageController.thread, {
     params: t.Object({ id: t.String() }),
@@ -47,4 +62,9 @@ export const messageRoutes = new Elysia({ prefix: "/messages" })
       offset: t.Optional(t.String()),
     }),
     response: { 200: t.Array(messageSchema) },
+    detail: {
+      summary: "Get message thread",
+      description:
+        "Retrieve message thread. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
   });

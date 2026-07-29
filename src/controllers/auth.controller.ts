@@ -3,29 +3,18 @@ import { authService } from "../services/auth.service";
 export const authController = {
   register: async ({ body }: any) => authService.register(body),
 
+  resendOtp: async ({ body }: any) => authService.resendOtp(body.user_id),
+
   verifyOtp: async ({ body }: any) =>
     authService.verifyOtp(body.user_id, body.code),
 
-  login: async ({ body, jwt, cookie }: any) => {
+  login: async ({ body, jwt }: any) => {
     const user = await authService.login(body.email, body.password);
     const token = await jwt.sign({ sub: user.id });
-    cookie.auth.set({
-      value: token,
-      httpOnly: true,
-      path: "/",
-      maxAge: 7 * 86400,
-    });
-    return { id: user.id, full_name: user.full_name, email: user.email }; // token removed
+    return { id: user.id, full_name: user.full_name, email: user.email, token };
   },
 
-  logout: async ({ cookie }: any) => {
-    cookie.auth.set({
-      value: "",
-      httpOnly: true,
-      path: "/",
-      expires: new Date(0),
-    });
-
+  logout: async () => {
     return { message: "Logged out successfully" };
   },
 };
