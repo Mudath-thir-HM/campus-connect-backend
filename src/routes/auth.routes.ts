@@ -58,4 +58,12 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         }),
       }),
     },
+  })
+  .post("/logout", authController.logout, {
+    cookie: t.Cookie({ auth: t.Optional(t.String()) }),
+    response: {
+      200: t.Object({
+        message: t.String({ examples: ["Logged out successfully"] }),
+      }),
+    },
   });

@@ -17,4 +17,15 @@ export const authController = {
     });
     return { id: user.id, full_name: user.full_name, email: user.email }; // token removed
   },
+
+  logout: async ({ cookie }: any) => {
+    cookie.auth.set({
+      value: "",
+      httpOnly: true,
+      path: "/",
+      expires: new Date(0),
+    });
+
+    return { message: "Logged out successfully" };
+  },
 };
