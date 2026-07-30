@@ -1,4 +1,5 @@
 import { forumRepository } from "../repositories/forum.repository";
+import { postRepository } from "../repositories/post.repository";
 import { AuthError } from "./auth.service"; // reusing the same error-with-code pattern
 
 export const forumService = {
@@ -8,6 +9,12 @@ export const forumService = {
 
   async list() {
     return forumRepository.list();
+  },
+
+  async posts(forumId: string) {
+    const forum = await forumRepository.findById(forumId);
+    if (!forum) throw new AuthError("FORUM_NOT_FOUND", "Forum not found");
+    return postRepository.listByForum(forumId);
   },
 
   async join(forumId: string, userId: string) {

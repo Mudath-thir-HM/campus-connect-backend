@@ -41,7 +41,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       }),
     },
   })
-  .post("/resend-otp", authController.resendOtp, {
+  .post("/resend_otp", authController.resendOtp, {
     body: resendOtpSchema,
     response: {
       200: t.Object({
@@ -53,7 +53,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       }),
     },
   })
-  .post("/verify-otp", authController.verifyOtp, {
+  .post("/verify_otp", authController.verifyOtp, {
     body: verifyOtpSchema,
     response: {
       200: t.Object({

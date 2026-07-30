@@ -1,7 +1,11 @@
 import { Elysia, t } from "elysia";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { forumController } from "../controllers/forum.controller";
-import { createForumSchema, forumSchema } from "../types/schema";
+import {
+  createForumSchema,
+  feedPostSchema,
+  forumSchema,
+} from "../types/schema";
 
 export const forumRoutes = new Elysia({ prefix: "/forums" })
   .use(authMiddleware)
@@ -14,6 +18,15 @@ export const forumRoutes = new Elysia({ prefix: "/forums" })
       summary: "List all forums",
       description:
         "Retrieve all available forums. Requires Authorization header: `Authorization: Bearer <token>`",
+    },
+  })
+  .get("/:id", forumController.posts as any, {
+    params: t.Object({ id: t.String() }),
+    response: { 200: t.Array(feedPostSchema) },
+    detail: {
+      summary: "Get forum posts",
+      description:
+        "Retrieve all posts for a given forum. Requires Authorization header: `Authorization: Bearer <token>`",
     },
   })
   .post("/", forumController.create as any, {
